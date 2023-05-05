@@ -24,15 +24,15 @@ def get_difference_of_two_digits(number):
 
 def get_random_number(min_num, max_num):
 
-    num4seed = time.localtime().tm_min + time.localtime().tm_sec
-    random.seed(num4seed)
+    # num4seed = time.localtime().tm_min + time.localtime().tm_sec
+    # random.seed(num4seed)
 
     return random.randint(min_num, max_num)
 
 
-def is_prime(n):
-    for i in range(2, int(math.sqrt(n)) + 1):
-        if (n % i) == 0:
+def is_prime(num):
+    for i in range(2, int(math.sqrt(num)) + 1):
+        if (num % i) == 0:
             return False
-        return True
+    return True
 
