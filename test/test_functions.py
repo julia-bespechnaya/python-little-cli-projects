@@ -1,4 +1,4 @@
-from src.support_functions import get_digit, get_digits, get_difference_of_two_digits, get_num_len
+from src.support_functions import get_digit, get_digits, get_difference_of_two_digits, get_num_len, is_prime
 
 
 class TestFunctions:
@@ -37,3 +37,9 @@ class TestFunctions:
         for num in range(-999, -99):
             assert get_num_len(num) == 3
 
+    def test_is_prime(self):
+        prime_nums = (2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61, 67, 71, 73, 79, 83, 89, 97)
+        assert all(map(is_prime, prime_nums)) is True
+
+        composite_nums = set(range(101)).difference(prime_nums)
+        assert all(map(is_prime, composite_nums)) is False
