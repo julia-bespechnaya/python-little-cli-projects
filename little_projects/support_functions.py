@@ -24,10 +24,12 @@ def get_difference_of_two_digits(number):
 
 # current_range представляет из себя tuple из двух чисел
 def get_random_number(current_range):
+    min_num, max_num = current_range
+
     num4seed = time.localtime().tm_min + time.localtime().tm_sec
     random.seed(num4seed)
 
-    return random.randint(*current_range)
+    return random.randint(min_num, max_num - 1)
 
 
 def is_prime(n):
