@@ -1,6 +1,6 @@
 import random
 
-from src.support_functions import get_random_number, get_difference_of_two_digits
+from src.support_functions import get_random_number, get_difference_of_two_digits, is_prime
 
 
 class GameGuessTheNumber:
@@ -132,12 +132,16 @@ class HintManager:
             print("Искомое число меньше" if input_number > self.hidden_number else "Искомое число больше")
 
         if hint_type == "multiples":
-            try:
-                divider = next(self.dividers)
-                print(f"Искомое число делится на {divider} без остатка")
-            except StopIteration:
+            if is_prime(self.hidden_number):
                 print("Искомое число является простым")
                 self.hints_availability[hint_type] = False
+            else:
+                try:
+                    divider = next(self.dividers)
+                    print(f"Искомое число делится на {divider} без остатка")
+                except StopIteration:
+                    print("Все делители числа были перечислены")
+                    self.hints_availability[hint_type] = False
 
         if hint_type == "two_digits_diff":
             difference = get_difference_of_two_digits(self.hidden_number)
