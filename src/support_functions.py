@@ -29,7 +29,7 @@ def get_random_number(current_range):
     num4seed = time.localtime().tm_min + time.localtime().tm_sec
     random.seed(num4seed)
 
-    return random.randint(min_num, max_num - 1)
+    return random.randint(min_num, max_num)
 
 
 def is_prime(n):

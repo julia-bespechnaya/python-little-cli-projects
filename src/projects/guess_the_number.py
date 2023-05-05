@@ -13,9 +13,9 @@ class GameGuessTheNumber:
     DIFFICULTIES = ("easy", "medium", "hard")
 
     # В каком диапазоне будет загадано число в зависимости от сложности
-    NUMBERS_RANGES = {"easy": (1, 10 + 1),
-                      "medium": (1, 50 + 1),
-                      "hard": (1, 100 + 1)}
+    NUMBERS_RANGES = {"easy": (1, 10),
+                      "medium": (1, 50),
+                      "hard": (1, 100)}
 
     # Сколько очков отнимается при неверном ответе
     SCORE_PENALTIES = {"easy": 10,
@@ -74,7 +74,7 @@ class GameGuessTheNumber:
     def get_input_number(current_range):
         str_in = input(f"Попробуйте угадать целое число "
                        f"от {current_range[0]} "
-                       f"до {current_range[1] - 1}: ")
+                       f"до {current_range[1]}: ")
 
         """ Обработка ошибок """
         while not str_in.isdigit():
