@@ -22,9 +22,7 @@ def get_difference_of_two_digits(number):
     return abs(digits[0] - digits[1])
 
 
-# current_range представляет из себя tuple из двух чисел
-def get_random_number(current_range):
-    min_num, max_num = current_range
+def get_random_number(min_num, max_num):
 
     num4seed = time.localtime().tm_min + time.localtime().tm_sec
     random.seed(num4seed)
