@@ -1,6 +1,6 @@
 import random
 
-from src.support_functions import get_random_number, get_num_len, get_difference_of_two_digits
+from src.support_functions import get_random_number, get_difference_of_two_digits
 
 
 class GameGuessTheNumber:
@@ -47,7 +47,7 @@ class GameGuessTheNumber:
             str_in = input("Нажмите enter, чтобы попробовать еще раз.\n"
                            "Введите c (change), чтобы выбрать другой уровень сложности.\n"
                            "Введите e (exit), чтобы выйти.\n")
-            if str_in.lower() in ("e", "exit", "выход", "выйти"):
+            if str_in.lower() in ("e", "exit", "в", "выход", "выйти"):
                 break
 
         print("\nСпасибо за игру!\n")
@@ -55,8 +55,8 @@ class GameGuessTheNumber:
     def play_match(self):
         print(f"\nСчет игрока {self.user.login}: {self.user.score}\n")
 
-        hidden_number = get_random_number(self.numbers_range)
-        input_number = self.get_input_number(self.numbers_range)
+        hidden_number = get_random_number(*self.numbers_range)
+        input_number = self.get_input_number(*self.numbers_range)
 
         hint_manager = HintManager(hidden_number)
 
@@ -65,16 +65,16 @@ class GameGuessTheNumber:
             print(f"Вы не угадали! Счет: {self.user.score}\n")
 
             hint_manager.show_hint(input_number)
-            input_number = self.get_input_number(self.numbers_range)
+            input_number = self.get_input_number(*self.numbers_range)
 
         self.user.score += self.victory_points
         print(f"Вы угадали! Счет: {self.user.score}\n")
 
     @staticmethod
-    def get_input_number(current_range):
+    def get_input_number(min_num, max_num):
         str_in = input(f"Попробуйте угадать целое число "
-                       f"от {current_range[0]} "
-                       f"до {current_range[1]}: ")
+                       f"от {min_num} "
+                       f"до {max_num}: ")
 
         """ Обработка ошибок """
         while not str_in.isdigit():
@@ -110,7 +110,7 @@ class GameGuessTheNumber:
 
 class HintManager:
 
-    HINTS_4_ANY = ("is_smaller", "multiples", "two_digit_num")
+    HINTS_4_ANY = ("is_smaller", "multiples")
     HINTS_4_TWO_DIGIT = ("two_digits_diff", )
     HINTS_4_TREE_DIGIT = ("", )
     HINT_TYPES = HINTS_4_ANY + HINTS_4_TWO_DIGIT + HINTS_4_TREE_DIGIT
@@ -138,11 +138,6 @@ class HintManager:
             except StopIteration:
                 print("Искомое число является простым")
                 self.hints_availability[hint_type] = False
-
-        if hint_type == "two_digit_num":
-            num_len = get_num_len(self.hidden_number)
-            print("Искомое число является двузначным" if num_len == 2 else "Искомое число не является двузначным")
-            self.hints_availability[hint_type] = False
 
         if hint_type == "two_digits_diff":
             difference = get_difference_of_two_digits(self.hidden_number)
