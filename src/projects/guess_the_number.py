@@ -1,8 +1,12 @@
 import random
+from enum import Enum
 
+from src.common_parts import Difficulty, EXIT_FLAGS
 from src.support_functions import get_random_number, get_difference_of_two_digits, is_prime
 
 
+# TODO: Нет возможности поменять сложность игры "на ходу"
+# TODO: Подключить БД
 class GameGuessTheNumber:
     """ Игра Угадай число.
     Условие победы: пользователь вводит в консоль число, равное hidden_number.
@@ -10,22 +14,20 @@ class GameGuessTheNumber:
 
     TITLE = "Угадай Число"
 
-    DIFFICULTIES = ("easy", "medium", "hard")
-
     # В каком диапазоне будет загадано число в зависимости от сложности
-    NUMBERS_RANGES = {"easy": (1, 10),
-                      "medium": (1, 50),
-                      "hard": (1, 100)}
+    NUMBERS_RANGES = {Difficulty.EASY: (1, 10),
+                      Difficulty.MEDIUM: (1, 50),
+                      Difficulty.HARD: (1, 100)}
 
     # Сколько очков отнимается при неверном ответе
-    SCORE_PENALTIES = {"easy": 10,
-                       "medium": 10,
-                       "hard": 10}
+    SCORE_PENALTIES = {Difficulty.EASY: 10,
+                       Difficulty.MEDIUM: 10,
+                       Difficulty.HARD: 10}
 
     # Сколько очков выдается за угадывание числа в зависимости от сложности
-    VICTORY_POINTS = {"easy": 50,
-                      "medium": 75,
-                      "hard": 100}
+    VICTORY_POINTS = {Difficulty.EASY: 50,
+                      Difficulty.MEDIUM: 75,
+                      Difficulty.HARD: 100}
 
     # Hint rarity
 
@@ -47,7 +49,7 @@ class GameGuessTheNumber:
             str_in = input("Нажмите enter, чтобы попробовать еще раз.\n"
                            "Введите c (change), чтобы выбрать другой уровень сложности.\n"
                            "Введите e (exit), чтобы выйти.\n")
-            if str_in.lower() in ("e", "exit", "в", "выход", "выйти"):
+            if str_in.lower() in EXIT_FLAGS:
                 break
 
         print("\nСпасибо за игру!\n")
@@ -88,7 +90,6 @@ class GameGuessTheNumber:
 
     @staticmethod
     def init_user():
-        # TODO: Подключить БД
         str_in = input("Чтобы играть за гостевой аккаунт, нажмите Enter.\n"
                        "Чтобы создать или зайти в свой аккаунт, введите логин: ")
         print()
@@ -105,33 +106,43 @@ class GameGuessTheNumber:
         while str_in not in ("1", "2", "3"):
             str_in = input("Повторите ввод: ")
 
-        return cls.DIFFICULTIES[int(str_in) - 1]
+        return Difficulty(int(str_in) - 1)
+
+
+class HintType(Enum):
+    MORE_OR_LESS = 0
+    MULTIPLES = 1
+    TWO_DIGITS_DIFFERENCE = 2
+
+    @classmethod
+    def for_any(cls):
+        return cls.MORE_OR_LESS, cls.MULTIPLES
+
+    @classmethod
+    def for_two_digit(cls):
+        return cls.TWO_DIGITS_DIFFERENCE,
 
 
 class HintManager:
 
-    HINTS_4_ANY = ("is_smaller", "multiples")
-    HINTS_4_TWO_DIGIT = ("two_digits_diff", )
-    HINTS_4_TREE_DIGIT = ("", )
-    HINT_TYPES = HINTS_4_ANY + HINTS_4_TWO_DIGIT + HINTS_4_TREE_DIGIT
     # Оценивается в число
     HINT_RARITY = {}
 
     def __init__(self, hidden_number):
         self.hidden_number = hidden_number
         self.hints = self.init_hints(hidden_number)
-        self.hints_availability = dict.fromkeys(self.HINT_TYPES, True)
+        self.hints_availability = dict.fromkeys(self.hints, True)
         self.dividers = (i for i in range(2, hidden_number)
                          if hidden_number % i == 0)
 
     def show_hint(self, input_number):
 
-        hint_type = self.choose_hint()
+        hint_type = self.choose_hint_type()
 
-        if hint_type == "is_smaller":
+        if hint_type is HintType.MORE_OR_LESS:
             print("Искомое число меньше" if input_number > self.hidden_number else "Искомое число больше")
 
-        if hint_type == "multiples":
+        if hint_type is HintType.MULTIPLES:
             if is_prime(self.hidden_number):
                 print("Искомое число является простым")
                 self.hints_availability[hint_type] = False
@@ -143,12 +154,12 @@ class HintManager:
                     print("Все делители числа были перечислены")
                     self.hints_availability[hint_type] = False
 
-        if hint_type == "two_digits_diff":
+        if hint_type is HintType.TWO_DIGITS_DIFFERENCE:
             difference = get_difference_of_two_digits(self.hidden_number)
             print(f"Разница между цифрами искомого числа составляет {difference}")
             self.hints_availability[hint_type] = False
 
-    def choose_hint(self):
+    def choose_hint_type(self):
         hint_type = random.choice(self.hints)
         while not self.hints_availability[hint_type]:
             hint_type = random.choice(self.hints)
@@ -156,11 +167,9 @@ class HintManager:
 
     @classmethod
     def init_hints(cls, hidden_number):
-        hints = cls.HINTS_4_ANY
+        hints = HintType.for_any()
         if 9 < hidden_number < 100:
-            hints += cls.HINTS_4_TWO_DIGIT
-        elif hidden_number > 100:
-            hints += cls.HINTS_4_TREE_DIGIT
+            hints += HintType.for_two_digit()
         return hints
 
 
@@ -168,8 +177,9 @@ class User:
 
     def __init__(self, login):
         self.login = login
-        # TODO: доставать score и stats из БД
+        # TODO: Подгружать из БД
         self.score = 1000
+        # TODO: Доработать сбор статистики
         self.stats = {"first try win": 0}
 
 
