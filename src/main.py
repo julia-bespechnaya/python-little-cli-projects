@@ -8,7 +8,7 @@ games = [GameGuessTheNumber]
 def main():
     while True:
         print("Доступные игры и приложения:")
-        print(*(f"{i + 1}. {games[i].TITLE}\n" for i in range(len(games))))
+        print(*(f"{i + 1}. {games[i].TITLE}\n" for i in range(len(games))), sep="")
 
         game_number = get_game_number()
         # Start chosen game

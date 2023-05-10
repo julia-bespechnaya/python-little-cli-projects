@@ -1,6 +1,5 @@
 import math
 import random
-import time
 
 
 def get_num_len(num):
@@ -23,10 +22,6 @@ def get_difference_of_two_digits(number):
 
 
 def get_random_number(min_num, max_num):
-
-    # num4seed = time.localtime().tm_min + time.localtime().tm_sec
-    # random.seed(num4seed)
-
     return random.randint(min_num, max_num)
 
 
